@@ -1,5 +1,8 @@
 "use client";
 
+import { Mail } from "lucide-react";
+import { FaLinkedinIn } from "react-icons/fa";
+
 export default function Footer() {
   return (
     <footer className="relative py-12 px-6 border-t border-space-glow/10">
@@ -11,18 +14,20 @@ export default function Footer() {
         <div className="flex items-center gap-6">
           <a
             href="mailto:abdalsalamalbirawi@gmail.com"
-            className="font-mono text-space-star/40 hover:text-space-cyan text-sm transition-colors"
+            className="flex items-center gap-2 font-mono text-space-star/40 hover:text-space-cyan text-sm transition-colors"
             aria-label="Email"
           >
+            <Mail size={15} />
             Email
           </a>
           <a
             href="https://linkedin.com/in/abdalsalam-albirawi"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-mono text-space-star/40 hover:text-space-cyan text-sm transition-colors"
+            className="flex items-center gap-2 font-mono text-space-star/40 hover:text-space-cyan text-sm transition-colors"
             aria-label="LinkedIn"
           >
+            <FaLinkedinIn size={15} />
             LinkedIn
           </a>
         </div>

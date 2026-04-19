@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Rocket } from "lucide-react";
 
 export default function LoadingScreen() {
   const [count, setCount] = useState(3);
@@ -84,9 +85,7 @@ export default function LoadingScreen() {
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.5, opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  style={{
-                    textShadow: "0 0 40px #7c3aed, 0 0 80px #7c3aed",
-                  }}
+                  style={{ textShadow: "0 0 40px #7c3aed, 0 0 80px #7c3aed" }}
                 >
                   {count}
                 </motion.div>
@@ -94,12 +93,18 @@ export default function LoadingScreen() {
               {phase === "launch" && (
                 <motion.div
                   key="launch"
-                  className="font-display text-4xl text-space-cyan"
+                  className="flex items-center justify-center gap-3 font-display text-4xl text-space-cyan"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   style={{ textShadow: "0 0 20px #06b6d4" }}
                 >
-                  🚀 LAUNCH
+                  <motion.div
+                    animate={{ y: [0, -12, 0], rotate: [-5, 5, -5] }}
+                    transition={{ duration: 0.6, repeat: Infinity }}
+                  >
+                    <Rocket size={40} className="text-space-cyan" />
+                  </motion.div>
+                  LAUNCH
                 </motion.div>
               )}
             </AnimatePresence>

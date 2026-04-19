@@ -5,6 +5,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
+import {
+  Mail,
+  Phone,
+  Send,
+  Loader2,
+  CheckCircle,
+  AlertTriangle,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
+import { FaLinkedinIn } from "react-icons/fa";
 import { staggerContainer, fadeInLeft, fadeInRight } from "@/lib/animations";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
@@ -25,36 +36,13 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>;
 
-const CONTACT_ITEMS = (info: ContactInfoData) => [
-  {
-    icon: "📡",
-    label: "Email",
-    value: info.email,
-    href: `mailto:${info.email}`,
-  },
-  {
-    icon: "☎️",
-    label: "Phone",
-    value: info.phone,
-    href: `tel:${info.phone.replace(/\s/g, "")}`,
-  },
-  {
-    icon: "🛸",
-    label: "LinkedIn",
-    value: "abdalsalam-albirawi",
-    href: info.linkedin,
-  },
-];
-
 interface ContactProps {
   data?: ContactInfoData | null;
 }
 
 export default function Contact({ data }: ContactProps) {
   const info = data ?? DEFAULT_CONTACT;
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
-    "idle"
-  );
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
   const {
     register,
@@ -81,6 +69,27 @@ export default function Contact({ data }: ContactProps) {
     }
   };
 
+  const contactItems = [
+    {
+      Icon: Mail,
+      label: "Email",
+      value: info.email,
+      href: `mailto:${info.email}`,
+    },
+    {
+      Icon: Phone,
+      label: "Phone",
+      value: info.phone,
+      href: `tel:${info.phone.replace(/\s/g, "")}`,
+    },
+    {
+      Icon: FaLinkedinIn,
+      label: "LinkedIn",
+      value: "abdalsalam-albirawi",
+      href: info.linkedin,
+    },
+  ];
+
   return (
     <section id="contact" className="relative py-24 px-6 overflow-hidden">
       <div className="absolute inset-0 bg-space-deep/50" />
@@ -103,23 +112,19 @@ export default function Contact({ data }: ContactProps) {
           {/* Left: Contact info */}
           <motion.div variants={fadeInLeft} className="space-y-6">
             <p className="font-mono text-space-cyan text-xs tracking-[0.3em] uppercase mb-8">
-              // Communication Channels
+              {"// Communication Channels"}
             </p>
 
-            {CONTACT_ITEMS(info).map((item) => (
+            {contactItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
                 target={item.href.startsWith("http") ? "_blank" : undefined}
-                rel={
-                  item.href.startsWith("http")
-                    ? "noopener noreferrer"
-                    : undefined
-                }
+                rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 className="flex items-center gap-4 p-4 bg-space-black/40 border border-space-glow/20 rounded-xl hover:border-space-glow/50 hover:bg-space-glow/5 transition-all duration-300 group"
               >
-                <div className="w-12 h-12 rounded-full bg-space-glow/10 border border-space-glow/30 flex items-center justify-center text-xl group-hover:border-space-glow group-hover:shadow-[0_0_15px_rgba(124,58,237,0.4)] transition-all duration-300">
-                  {item.icon}
+                <div className="w-12 h-12 rounded-full bg-space-glow/10 border border-space-glow/30 flex items-center justify-center group-hover:border-space-glow group-hover:shadow-[0_0_15px_rgba(124,58,237,0.4)] transition-all duration-300 text-space-glow">
+                  <item.Icon size={20} />
                 </div>
                 <div>
                   <p className="font-mono text-space-star/50 text-xs uppercase tracking-widest">
@@ -129,17 +134,19 @@ export default function Contact({ data }: ContactProps) {
                     {item.value}
                   </p>
                 </div>
-                <span className="ml-auto text-space-star/30 group-hover:text-space-cyan group-hover:translate-x-1 transition-all">
-                  →
-                </span>
+                <ArrowRight
+                  size={16}
+                  className="ml-auto text-space-star/30 group-hover:text-space-cyan group-hover:translate-x-1 transition-all"
+                />
               </a>
             ))}
 
-            {/* Social note */}
-            <div className="mt-8 p-4 bg-space-glow/5 border border-space-glow/20 rounded-xl">
+            {/* Availability note */}
+            <div className="mt-8 p-4 bg-space-glow/5 border border-space-glow/20 rounded-xl flex gap-3">
+              <Sparkles size={16} className="text-space-glow flex-shrink-0 mt-0.5" />
               <p className="font-mono text-space-star/50 text-xs leading-relaxed">
-                🌌 Available for freelance projects, full-time roles, and
-                exciting collaborations across the universe.
+                Available for freelance projects, full-time roles, and exciting
+                collaborations across the universe.
               </p>
             </div>
           </motion.div>
@@ -207,20 +214,30 @@ export default function Contact({ data }: ContactProps) {
                 disabled={status === "sending"}
                 className="w-full justify-center"
               >
-                {status === "idle" && "🚀 Launch Transmission"}
-                {status === "sending" && (
-                  <span className="flex items-center gap-2">
-                    <motion.span
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    >
-                      ⏳
-                    </motion.span>
-                    Transmitting...
-                  </span>
+                {status === "idle" && (
+                  <>
+                    <Send size={15} />
+                    Launch Transmission
+                  </>
                 )}
-                {status === "success" && "✓ Transmission Received!"}
-                {status === "error" && "⚠️ Signal Lost — Retry"}
+                {status === "sending" && (
+                  <>
+                    <Loader2 size={15} className="animate-spin" />
+                    Transmitting...
+                  </>
+                )}
+                {status === "success" && (
+                  <>
+                    <CheckCircle size={15} />
+                    Transmission Received!
+                  </>
+                )}
+                {status === "error" && (
+                  <>
+                    <AlertTriangle size={15} />
+                    Signal Lost — Retry
+                  </>
+                )}
               </Button>
             </form>
           </motion.div>

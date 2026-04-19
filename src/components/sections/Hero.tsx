@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
+import { Rocket, Satellite, ChevronDown } from "lucide-react";
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { staggerContainer, letterVariant } from "@/lib/animations";
 import { Button } from "@/components/ui/Button";
@@ -28,7 +28,7 @@ interface HeroProps {
 
 export default function Hero({ data }: HeroProps) {
   const hero = data ?? DEFAULT_HERO;
-  const { normX, normY } = useMousePosition();
+  const mouseRef = useMousePosition();
   const letters = hero.title.split("");
 
   return (
@@ -42,10 +42,10 @@ export default function Hero({ data }: HeroProps) {
 
       {/* Three.js canvas */}
       <div className="absolute inset-0 z-0">
-        <HeroCanvas mouseX={normX} mouseY={normY} />
+        <HeroCanvas mouseRef={mouseRef} />
       </div>
 
-      {/* CSS star particles behind content */}
+      {/* CSS star particles */}
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 40 }).map((_, i) => (
           <div
@@ -77,7 +77,7 @@ export default function Hero({ data }: HeroProps) {
 
         {/* Animated title */}
         <motion.h1
-          className="font-display text-4xl sm:text-5xl md:text-7xl text-space-star mb-4 leading-tight"
+          className="font-display text-2xl sm:text-5xl md:text-7xl text-space-star mb-4 leading-tight"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
@@ -127,10 +127,12 @@ export default function Hero({ data }: HeroProps) {
           transition={{ duration: 0.8, delay: 1.6 }}
         >
           <Button href={hero.ctaLink} variant="primary">
-            🚀 {hero.ctaText}
+            <Rocket size={16} />
+            {hero.ctaText}
           </Button>
           <Button href="#contact" variant="secondary">
-            📡 Get In Touch
+            <Satellite size={16} />
+            Get In Touch
           </Button>
         </motion.div>
       </div>
@@ -151,11 +153,10 @@ export default function Hero({ data }: HeroProps) {
           transition={{ duration: 1.5, repeat: Infinity }}
         />
         <motion.div
-          className="text-space-glow text-lg"
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          ↓
+          <ChevronDown size={20} className="text-space-glow" />
         </motion.div>
       </motion.div>
     </section>

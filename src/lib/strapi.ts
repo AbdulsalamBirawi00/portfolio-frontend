@@ -1,4 +1,3 @@
-import axios from "axios";
 import type { StrapiResponse, StrapiData } from "@/types/strapi";
 import type {
   HeroData,
@@ -13,23 +12,34 @@ const BASE_URL =
   process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 const API_TOKEN = process.env.STRAPI_API_TOKEN ?? "";
 
-const client = axios.create({
-  baseURL: `${BASE_URL}/api`,
-  headers: {
-    "Content-Type": "application/json",
-    ...(API_TOKEN ? { Authorization: `Bearer ${API_TOKEN}` } : {}),
-  },
-});
+const defaultHeaders: HeadersInit = {
+  "Content-Type": "application/json",
+  ...(API_TOKEN ? { Authorization: `Bearer ${API_TOKEN}` } : {}),
+};
+
+function buildUrl(endpoint: string, params?: Record<string, string | number>): string {
+  const url = new URL(`${BASE_URL}/api${endpoint}`);
+  if (params) {
+    Object.entries(params).forEach(([k, v]) =>
+      url.searchParams.set(k, String(v))
+    );
+  }
+  return url.toString();
+}
 
 async function fetchSingle<T>(
   endpoint: string,
-  params?: object
+  params?: Record<string, string | number>
 ): Promise<T | null> {
   try {
-    const { data } = await client.get<StrapiResponse<T>>(endpoint, { params });
-    if (!data.data) return null;
-    const raw = data.data as StrapiData<T>;
-    return raw.attributes;
+    const res = await fetch(buildUrl(endpoint, params), {
+      headers: defaultHeaders,
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    const json: StrapiResponse<T> = await res.json();
+    if (!json.data) return null;
+    return (json.data as StrapiData<T>).attributes;
   } catch {
     return null;
   }
@@ -37,13 +47,20 @@ async function fetchSingle<T>(
 
 async function fetchCollection<T>(
   endpoint: string,
-  params?: object
+  params?: Record<string, string | number>
 ): Promise<(T & { id: number })[]> {
   try {
-    const { data } = await client.get<StrapiResponse<T>>(endpoint, { params });
-    if (!data.data) return [];
-    const raw = data.data as StrapiData<T>[];
-    return raw.map((item) => ({ id: item.id, ...item.attributes }));
+    const res = await fetch(buildUrl(endpoint, params), {
+      headers: defaultHeaders,
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json: StrapiResponse<T> = await res.json();
+    if (!json.data) return [];
+    return (json.data as StrapiData<T>[]).map((item) => ({
+      id: item.id,
+      ...item.attributes,
+    }));
   } catch {
     return [];
   }
@@ -57,20 +74,20 @@ export const getAbout = () =>
 
 export const getSkills = () =>
   fetchCollection<SkillData>("/skills", {
-    sort: "category:asc,level:desc",
+    "sort": "category:asc,level:desc",
     "pagination[pageSize]": 100,
   });
 
 export const getExperiences = () =>
   fetchCollection<ExperienceData>("/experiences", {
-    sort: "startDate:desc",
+    "sort": "startDate:desc",
     "pagination[pageSize]": 100,
   });
 
 export const getProjects = () =>
   fetchCollection<ProjectData>("/projects", {
     populate: "*",
-    sort: "featured:desc",
+    "sort": "featured:desc",
     "pagination[pageSize]": 100,
   });
 

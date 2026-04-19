@@ -1,6 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Rocket, Zap, Globe2, Star, ExternalLink } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
+import type { LucideIcon } from "lucide-react";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
 import SectionHeading from "@/components/ui/SectionHeading";
 import type { ProjectData } from "@/types";
@@ -60,6 +63,8 @@ const TAG_COLORS = [
   "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
 ];
 
+const PROJECT_ICONS: LucideIcon[] = [Rocket, Zap, Globe2, Star];
+
 interface ProjectsProps {
   data?: ProjectData[] | null;
 }
@@ -72,6 +77,7 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
     "from-pink-500/20 to-space-cyan/10",
   ];
   const gradient = gradients[index % gradients.length];
+  const ProjectIcon = PROJECT_ICONS[index % PROJECT_ICONS.length];
 
   return (
     <motion.div
@@ -102,14 +108,20 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
             />
           ))}
         </div>
-        <span className="text-5xl z-10 group-hover:scale-110 transition-transform duration-300">
-          {["🚀", "⚡", "🌌", "🪐"][index % 4]}
-        </span>
+
+        <motion.div
+          className="z-10 text-white/70 group-hover:text-white transition-colors duration-300"
+          whileHover={{ scale: 1.15, rotate: 5 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <ProjectIcon size={52} strokeWidth={1.2} />
+        </motion.div>
 
         {project.featured && (
-          <div className="absolute top-3 right-3 bg-space-gold/20 border border-space-gold/40 rounded-full px-3 py-1">
+          <div className="absolute top-3 right-3 bg-space-gold/20 border border-space-gold/40 rounded-full px-3 py-1 flex items-center gap-1">
+            <Star size={11} className="text-space-gold fill-space-gold" />
             <span className="font-mono text-space-gold text-xs tracking-widest">
-              ★ FEATURED
+              FEATURED
             </span>
           </div>
         )}
@@ -124,7 +136,6 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
           {project.description}
         </p>
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {project.tags.map((tag, i) => (
             <span
@@ -138,7 +149,6 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
           ))}
         </div>
 
-        {/* Links */}
         <div className="flex gap-4">
           {project.liveUrl && (
             <a
@@ -147,7 +157,8 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
               rel="noopener noreferrer"
               className="font-mono text-xs text-space-cyan hover:text-space-gold transition-colors flex items-center gap-1"
             >
-              Live ↗
+              <ExternalLink size={12} />
+              Live
             </a>
           )}
           {project.githubUrl && (
@@ -157,7 +168,8 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
               rel="noopener noreferrer"
               className="font-mono text-xs text-space-star/50 hover:text-space-star transition-colors flex items-center gap-1"
             >
-              GitHub ↗
+              <FaGithub size={13} />
+              GitHub
             </a>
           )}
         </div>
@@ -174,7 +186,6 @@ export default function Projects({ data }: ProjectsProps) {
       <div className="absolute inset-0 bg-space-black" />
       <div className="absolute inset-0 bg-nebula-gradient opacity-25" />
 
-      {/* Floating nebula blobs */}
       <div className="absolute top-1/4 left-10 w-64 h-64 bg-space-glow/5 rounded-full blur-3xl animate-float" />
       <div
         className="absolute bottom-1/4 right-10 w-80 h-80 bg-space-cyan/5 rounded-full blur-3xl animate-float"
@@ -189,7 +200,7 @@ export default function Projects({ data }: ProjectsProps) {
         />
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
@@ -214,7 +225,7 @@ export default function Projects({ data }: ProjectsProps) {
             rel="noopener noreferrer"
             className="text-space-cyan hover:text-space-gold transition-colors"
           >
-            LinkedIn ↗
+            LinkedIn
           </a>
         </motion.p>
       </div>
